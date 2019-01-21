@@ -4,6 +4,7 @@
 /dist
 /tmp
 /out-tsc
+/GitHub Pages
 
 # dependencies
 /node_modules
