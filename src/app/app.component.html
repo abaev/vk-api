@@ -1,9 +1,19 @@
 <div class="container-fluid">
+  <div class="row d-flex justify-content-end">
+    <header class="col-xs-12 d-flex justify-content-end">
+      <a href="https://github.com/abaev">
+        <span class="fab fa-github"></span>
+      </a>
+    </header>
+  </div>
   
   <div class="row">
-    <h5 class="col-xs-12 col-md-8 offset-md-2">
-      Это тестовая версия. Для правильной работы должны быть разрешены сторонние файлы cookie
+    <h5 class="col-xs-12 col-md-8 offset-md-2 text-center">
+      Авторизация в VK.<br>Информация о пользователе и список друзей
     </h5>
+    <p class="col-xs-12 col-md-8 offset-md-2 text-center">
+      Для правильной работы должны быть разрешены сторонние файлы cookie
+    </p>
   </div>
   
   <div class="row d-flex justify-content-center">
@@ -13,20 +23,25 @@
     </button>
   </div>
   
+  <!-- Инфа о пользователе, друзья -->
   <div class="row">
     <div class="alert alert-primary col-xs-12 col-md-8 offset-md-2" role="alert"
     *ngIf="status == 'connected'">
-      <p>{{firstName}}&nbsp;{{lastName}}</p>
+      <h6>{{firstName}}&nbsp;{{lastName}}</h6>
       <p>{{nickname}}</p>
-      <p>Ссылка на ВК: <a href="{{userHref}}">{{userHref}}</a></p>
-      <p>Список друзей:</p>
-      <p *ngFor="let friendId of friendsIds">
-        <a href="https://vk.com/id{{friendId}}">
-          https://vk.com/id{{friendId}}
-        </a>
-      </p>
+      <p>ВК: <a href="{{userHref}}">{{userHref}}</a></p>
+      
+      <h6>Друзья</h6>
+      <div *ngFor="let friend of friends">
+        <p>
+          <img src="{{friend.photo_50}}" alt="" class="rounded-circle">&nbsp;
+          <a href="https://vk.com/id{{friend.id}}">{{friend.first_name}}&nbsp;{{friend.last_name}}</a>
+        </p>
+      </div>
+
     </div>
     
+    <!-- Ошибки -->
     <div class="alert alert-danger col-xs-12 col-md-8 offset-md-2" role="alert"
     *ngIf="status == 'not_authorized' || status == 'unknown' || errorMessage">
       

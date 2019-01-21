@@ -6,3 +6,15 @@ button,
 div.alert {
 	margin-top: 20px;
 }
+
+header span {
+	font-size: 2em !important;
+}
+
+/*header a {
+	margin-top: 20px;
+	padding-left: 20px;
+}*/
+header {
+	padding: 15px;	
+}

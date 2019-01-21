@@ -1,6 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { Observable, from } from 'rxjs';
-
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError, retry, map, tap } from 'rxjs/operators';
@@ -17,20 +16,15 @@ export class AppComponent implements OnInit {
 	nickname: string;
 	userHref: string;
 	status: string;
-	friendsIds: number[];
+	friends: number[];
 	errorMessage: string | number;
-
-	httpOptions = {
-	  headers: new HttpHeaders({
-	    'Accept':  'application/json'
-	  })
-	};
 
   constructor(@Inject('VK') private vk: any,
   	private http: HttpClient) {}
 
   
   ngOnInit() {
+  	// Инициализвция API
   	this.vk.init({
 	    apiId: 6824974
 	  });
@@ -39,25 +33,25 @@ export class AppComponent implements OnInit {
   
   vkAuth() {
   	this.login().subscribe(response => { 
-  		console.log('VK Auth response ', response);
+  		// console.log('VK Auth response ', response);
   		this.status = response.status;
-  		this.firstName = response.session.user.first_name;
-  		this.lastName = response.session.user.last_name;
-  		this.nickname = response.session.user.nickname;
-  		this.userHref = response.session.user.href;
-  		this.getFriends(response.session.user.id).subscribe(response => {
-  			console.log('Friends: ', response);
-  			this.friendsIds = response.response.items;
+  		if(this.status == 'connected') {
+  			this.firstName = response.session.user.first_name;
+	  		this.lastName = response.session.user.last_name;
+	  		this.nickname = response.session.user.nickname;
+	  		this.userHref = response.session.user.href;
 
-  		}, err => { this.errorMessage = err; })
+	  		this.getFriends({userId: response.session.user.id, fields: 'photo_50'}).subscribe(response => {
+	  			// console.log('Friends: ', response);
+	  			this.friends = response.response;
+
+	  		}, err => { this.errorMessage = err; });
+  		}
 
   	}, error => {
-  		console.log('VK Auth error', error);
+  		console.error('VK Auth error', error);
   	});
 
-  	// this.oAuthLogin().subscribe(response => {
-  	// 	console.log('VK OAuth: ', response);
-  	// });
   }
 
   
@@ -71,30 +65,25 @@ export class AppComponent implements OnInit {
 	}
 
 
-	getFriends(userId): Observable<any> {
+	getFriends(options: any): Observable<any> {
 		return from(new Promise(resolve => {
-			this.vk.Api.call('friends.get', {user_id: userId, v:"5.73"}, response => {
-					resolve(response);
+
+			// Получаем список ID друзей
+			this.vk.Api.call('friends.get', {user_id: options.userId, v: '5.73'}, response => {
+
+					// Получаем информацию о друзьях
+					this.vk.Api.call('users.get',
+						{ 
+							user_ids: response.response.items.join(','),
+							fields: options.fields,
+							v: '5.73'
+						}, response => {
+							resolve(response);		
+						});
 				});
 			})
 		);
 	}
-
-
-
-	oAuthLogin(): Observable<any> {
-		return this.http.get('https://oauth.vk.com/authorize?client_id=6824974&redirect_uri=https://abaev.github.io/&scope=friends&v=5.92'/*,
-  		{ withCredentials: true }*/)
-  			.pipe(catchError(this.handleError));
-	}
-
-
-	// getFriends(userId): Observable<any> {
- //  	return this.http.get('https://api.vk.com/method/friends.get?user_id=' + userId/*,
- //  		{ withCredentials: true }*/
- //  		, this.httpOptions)
- //  			.pipe(catchError(this.handleError));
- //  }
 
 
 	private handleError(error: HttpErrorResponse) {

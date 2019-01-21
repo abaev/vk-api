@@ -1,4 +1,7 @@
 # VkAuth
+## Немного VK API
+Поскольку кода совсем мало, и цель просто потрогать VK API всё в одном компоненте без сервисов
+
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.2.1.
 
