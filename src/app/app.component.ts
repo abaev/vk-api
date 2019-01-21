@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
 	nickname: string;
 	userHref: string;
 	status: string;
-	friends: number[];
+	friends: any[];
 	errorMessage: string | number;
 
   constructor(@Inject('VK') private vk: any,
